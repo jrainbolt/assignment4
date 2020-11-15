@@ -106,11 +106,13 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
+
+#NOEMI
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
-
+    
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
@@ -129,7 +131,95 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        print "self.depth is in the main function: ", self.depth
+
+        (action, val) = self.value(gameState, 0, 0)
+
+        return action
+ 
+        #util.raiseNotDefined()
+
+
+    def nextAgent(self, gameState, agent):
+      if agent == gameState.getNumAgents(): # all enemy has played
+        return 0 #return index of pacman
+      else: #return index of next agent
+        return 1 + agent
+    
+    def nextDepth(self, depth, agent):
+      if agent == 0: #agent is pacman again 
+        return depth + 1
+      else:
+        return depth
+
+    #main recursive function
+    def value(self, state, depth, current_agent):
+      #print "depth in value() function is: ", depth
+      #print "self.depth in value() function is: ", self.depth
+
+      #base case 
+      if depth > self.depth:
+        #print "value and pre establised depth are the same"
+        value = self.evaluationFunction(state)
+        return (None, value) #no future action at the leaf node 
+
+      #depth += 1
+
+      if current_agent == 0: #pacman is playing
+        return self.max_value(state, depth, current_agent)
+      else:
+        return self.min_value(state, depth, current_agent)
+    
+    #helper recursive function
+    def max_value(self, state, depth, current_agent):
+      #print "calling max value function"
+
+      bestValue = -99999999
+      bestAction = None
+
+      #find best successor with highest value and return its action
+      for action in state.getLegalActions(current_agent):
+        successorState = state.generateSuccessor(current_agent, action)
+
+        #call recursive function
+        #depth += 1
+        next_agent = self.nextAgent(state, current_agent)
+        #next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
+
+        #compare and choose next max
+        if successorValue > bestValue:
+          bestValue = successorValue
+          bestAction = action #successorAction
+    
+      return (bestAction, bestValue)
+
+    #helper recursive function
+    def min_value(self, state, depth, current_agent):
+      #print "calling min value function"
+
+      bestValue = 99999999
+      bestAction = None
+
+      #find best successor with highest value and return its action
+      for action in state.getLegalActions(current_agent):
+        successorState = state.generateSuccessor(current_agent, action)
+
+        #call recursive function
+        #depth += 1
+        next_agent = self.nextAgent(state, current_agent)
+        #next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
+
+        #compare and choose next min
+        if successorValue < bestValue:
+          bestValue = successorValue
+          bestAction = action #successorAction
+    
+      return (bestAction, bestValue)
+
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
