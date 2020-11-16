@@ -175,21 +175,26 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        print "self.depth is in the main function: ", self.depth
+        #print "self.depth is in the main function: ", self.depth
+        #print "number of agents is: ", gameState.getNumAgents()
 
-        (action, val) = self.value(gameState, 0, 0)
+        #start at pacman agent (0) at the first depth
+        depth = 1
+        agent = 0
+        (action, val) = self.value(gameState, depth, agent)
 
         return action
  
         #util.raiseNotDefined()
 
-
+    #helper function for max_value() and min_value()
     def nextAgent(self, gameState, agent):
-      if agent == gameState.getNumAgents(): # all enemy has played
+      if agent == (gameState.getNumAgents() - 1): # all enemy has played, pacman has yet to go
         return 0 #return index of pacman
       else: #return index of next agent
         return 1 + agent
-    
+      
+    #helper function for max_value() and min_value()
     def nextDepth(self, depth, agent):
       if agent == 0: #agent is pacman again 
         return depth + 1
@@ -228,8 +233,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         #call recursive function
         #depth += 1
         next_agent = self.nextAgent(state, current_agent)
-        #next_depth = self.nextDepth(depth, next_agent)
-        (successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
+        next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue) = self.value(successorState, next_depth, next_agent )
+        #(successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
 
         #compare and choose next max
         if successorValue > bestValue:
@@ -252,8 +258,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         #call recursive function
         #depth += 1
         next_agent = self.nextAgent(state, current_agent)
-        #next_depth = self.nextDepth(depth, next_agent)
-        (successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
+        next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue) = self.value(successorState, next_depth, next_agent )
+        #(successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
 
         #compare and choose next min
         if successorValue < bestValue:
@@ -261,6 +268,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
           bestAction = action #successorAction
     
       return (bestAction, bestValue)
+
 
 
 
