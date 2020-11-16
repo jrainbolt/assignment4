@@ -175,9 +175,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        #print "self.depth is in the main function: ", self.depth
-        #print "number of agents is: ", gameState.getNumAgents()
-
         #start at pacman agent (0) at the first depth
         depth = 1
         agent = 0
@@ -185,8 +182,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         return action
  
-        #util.raiseNotDefined()
-
     #helper function for max_value() and min_value()
     def nextAgent(self, gameState, agent):
       if agent == (gameState.getNumAgents() - 1): # all enemy has played, pacman has yet to go
@@ -203,17 +198,14 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     #main recursive function
     def value(self, state, depth, current_agent):
-      #print "depth in value() function is: ", depth
-      #print "self.depth in value() function is: ", self.depth
-
+  
       #base case 
-      if depth > self.depth:
+      if depth > self.depth or state.isWin() or state.isLose():
         #print "value and pre establised depth are the same"
         value = self.evaluationFunction(state)
         return (None, value) #no future action at the leaf node 
 
-      #depth += 1
-
+      #recursive case
       if current_agent == 0: #pacman is playing
         return self.max_value(state, depth, current_agent)
       else:
@@ -221,9 +213,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
     
     #helper recursive function
     def max_value(self, state, depth, current_agent):
-      #print "calling max value function"
-
-      bestValue = -99999999
+      bestValue = -99999
       bestAction = None
 
       #find best successor with highest value and return its action
@@ -231,11 +221,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         successorState = state.generateSuccessor(current_agent, action)
 
         #call recursive function
-        #depth += 1
         next_agent = self.nextAgent(state, current_agent)
         next_depth = self.nextDepth(depth, next_agent)
         (successorAction, successorValue) = self.value(successorState, next_depth, next_agent )
-        #(successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
 
         #compare and choose next max
         if successorValue > bestValue:
@@ -246,9 +234,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     #helper recursive function
     def min_value(self, state, depth, current_agent):
-      #print "calling min value function"
-
-      bestValue = 99999999
+      bestValue = 99999
       bestAction = None
 
       #find best successor with highest value and return its action
@@ -256,11 +242,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
         successorState = state.generateSuccessor(current_agent, action)
 
         #call recursive function
-        #depth += 1
         next_agent = self.nextAgent(state, current_agent)
         next_depth = self.nextDepth(depth, next_agent)
         (successorAction, successorValue) = self.value(successorState, next_depth, next_agent )
-        #(successorAction, successorValue) = self.value(successorState, (depth + 1), next_agent )
 
         #compare and choose next min
         if successorValue < bestValue:
@@ -268,8 +252,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
           bestAction = action #successorAction
     
       return (bestAction, bestValue)
-
-
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
