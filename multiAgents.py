@@ -101,9 +101,6 @@ class ReflexAgent(Agent):
         for ghost in ghost_position_list:
           ghost_distance_list.append(manhattanDistance(ghost, newPos))
 
-        if currentGameState.getPacmanPosition() == newPos:
-          return -999999
-
         for distance in ghost_distance_list:
           if distance < 2:
             return -999999
