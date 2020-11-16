@@ -72,9 +72,55 @@ class ReflexAgent(Agent):
         newFood = successorGameState.getFood()
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        
+        """
+        print("successorGameState: {0}".format(successorGameState))
+        print("newPos: {0}".format(newPos))
+        print("newFood: {0}".format(newFood))
+        print("newGhostStates: {0}".format(newGhostStates))
+        print("newScaredTimes: {0}".format(newScaredTimes))
+        print("action: {0}".format(action))
+        """
+        FOOD_WEIGHT = 1000
+        GHOST_WEIGHT = 100000
+        new_food_list = newFood.asList()
+        food_distance_list = []
+        ghost_position_list = []
+        ghost_distance_list = []
+        
+        if currentGameState.getPacmanPosition() == newPos:
+          return -999999
 
-        "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        for ghost in newGhostStates:
+          ghost_position = ghost.getPosition()
+          ghost_position_list.append(ghost_position)
+
+        for food in new_food_list:
+          food_distance_list.append(manhattanDistance(food, newPos))
+        
+        for ghost in ghost_position_list:
+          ghost_distance_list.append(manhattanDistance(ghost, newPos))
+
+        if currentGameState.getPacmanPosition() == newPos:
+          return -999999
+
+        for distance in ghost_distance_list:
+          if distance < 2:
+            return -999999
+          if len(food_distance_list) == 0:
+            return 999999
+
+        number_of_food_remaining = len(food_distance_list)
+        sum_of_food_distances = sum(food_distance_list)
+        """
+        print("sum of food distances: {0}".format(sum_of_food_distances))
+        print("len of food distance list: {0}".format(number_of_food_remaining))
+        """
+
+        eval = FOOD_WEIGHT/sum_of_food_distances + GHOST_WEIGHT/number_of_food_remaining
+        #print("eval: {0}".format(eval))
+        
+        return eval
 
 def scoreEvaluationFunction(currentGameState):
     """
