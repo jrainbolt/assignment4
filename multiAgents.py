@@ -258,13 +258,106 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
-
+    
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        #start at pacman agent (0) at the first depth
+        depth = 1
+        agent = 0
+        alpha = -99999 #max's best option 
+        beta = 99999   #min's best option
+        (action, val, a, b) = self.value(gameState, depth, agent, alpha, beta)
+
+        return action
+ 
+    #helper function for max_value() and min_value()
+    def nextAgent(self, gameState, agent):
+      if agent == (gameState.getNumAgents() - 1): # all enemy has played, pacman has yet to go
+        return 0 #return index of pacman
+      else: #return index of next agent
+        return 1 + agent
+      
+    #helper function for max_value() and min_value()
+    def nextDepth(self, depth, agent):
+      if agent == 0: #agent is pacman again 
+        return depth + 1
+      else:
+        return depth
+
+    #main recursive function
+    def value(self, state, depth, current_agent, alpha, beta):
+
+      #base case 
+      if depth > self.depth or state.isWin() or state.isLose():
+        value = self.evaluationFunction(state)
+        return (None, value, -99999, 99999) 
+        #no future action at the leaf node, no numbers for alpha or beta
+
+      #recursive case
+      if current_agent == 0: #pacman is playing
+        return self.max_value(state, depth, current_agent, alpha, beta)
+      else:
+        return self.min_value(state, depth, current_agent, alpha, beta)
+    
+    #helper recursive function
+    def max_value(self, state, depth, current_agent, alpha, beta):
+      bestValue = -99999
+      bestAction = None
+
+      #find best successor with highest value and return its action
+      for action in state.getLegalActions(current_agent):
+        successorState = state.generateSuccessor(current_agent, action)
+
+        #call recursive function
+        next_agent = self.nextAgent(state, current_agent)
+        next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue, successorAlpha, successorBeta) = self.value(successorState, next_depth, next_agent, alpha, beta )
+
+        #compare and choose next max
+        if successorValue > bestValue:
+          bestValue = successorValue
+          bestAction = action 
+
+        #check against beta value 
+        if bestValue > beta:
+          return (bestAction, bestValue, alpha, beta)
+        
+        #uptate best alpha value 
+        alpha = max(bestValue, successorAlpha)
+
+      return (bestAction, bestValue, alpha, beta)
+
+    #helper recursive function
+    def min_value(self, state, depth, current_agent, alpha, beta):
+      bestValue = 99999
+      bestAction = None
+
+      #find best successor with highest value and return its action
+      for action in state.getLegalActions(current_agent):
+        successorState = state.generateSuccessor(current_agent, action)
+
+        #call recursive function
+        next_agent = self.nextAgent(state, current_agent)
+        next_depth = self.nextDepth(depth, next_agent)
+        (successorAction, successorValue, successorAlpha, successorBeta) = self.value(successorState, next_depth, next_agent, alpha, beta )
+
+        #compare and choose next min
+        if successorValue < bestValue:
+          bestValue = successorValue
+          bestAction = action 
+
+        #check against alpha value
+        if bestValue < alpha:
+          return (bestAction, bestValue, alpha, beta)
+
+        #uptate the best beta value
+        beta = min(bestValue, successorBeta)
+    
+      return (bestAction, bestValue, alpha, beta)
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
