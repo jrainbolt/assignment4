@@ -318,16 +318,28 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         (successorAction, successorValue, successorAlpha, successorBeta) = self.value(successorState, next_depth, next_agent, alpha, beta )
 
         #compare and choose next max
+        
         if successorValue > bestValue:
           bestValue = successorValue
-          bestAction = action 
+          bestAction = action
 
+        """
+        v = max(v, value(successor, alpha, beta))
+        if v >= beta return v
+        alpha = max(alpha, v)
+        
+        bestValue = max(bestValue, successorValue, alpha, beta)
+        if bestValue > beta:
+          return (bestAction, bestValue, alpha, beta)
+        
+        alpha = max(alpha, bestValue)
+        """
         #check against beta value 
         if bestValue > beta:
           return (bestAction, bestValue, alpha, beta)
         
         #uptate best alpha value 
-        alpha = max(bestValue, successorAlpha)
+        alpha = max(bestValue, alpha)
 
       return (bestAction, bestValue, alpha, beta)
 
@@ -355,7 +367,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           return (bestAction, bestValue, alpha, beta)
 
         #uptate the best beta value
-        beta = min(bestValue, successorBeta)
+        beta = min(bestValue, beta)
     
       return (bestAction, bestValue, alpha, beta)
 
